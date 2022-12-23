@@ -16,6 +16,25 @@ namespace WebApiGromov.Controllers
     {
         private APIgromovEntities db = new APIgromovEntities();
 
+
+        [ResponseType(typeof(List<ModelShop>))]
+        public IHttpActionResult GetShop(string str, int selectItem)
+        {
+            List<ModelShop> Shops = db.Shop.ToList().ConvertAll(x => new ModelShop(x));
+            switch (selectItem)
+            {
+                case 1:
+                    Shops = Shops.OrderBy(x => x.Title).ToList();
+                    break;
+                case 2:
+                    Shops = Shops.OrderByDescending(x => x.Title).ToList();
+                    break;
+            }
+            if (!String.IsNullOrEmpty(str))
+                Shops = Shops.Where(x => x.Title.ToString().ToLower().Contains(str.ToString().ToLower())).ToList();
+            return Ok(Shops);
+        }
+
         // GET: api/Shops
         [ResponseType(typeof(List<Shop>))]
         public IHttpActionResult GetShop()
